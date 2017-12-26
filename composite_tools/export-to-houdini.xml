@@ -1,0 +1,87 @@
+<?xml version="1.0" standalone="yes"?>
+<NewDataSet>
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="Group">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="name" type="xs:string" minOccurs="0" />
+                <xs:element name="parent" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="CompositeTools">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="ID" type="xs:string" minOccurs="0" />
+                <xs:element name="Name" type="xs:string" minOccurs="0" />
+                <xs:element name="UserToolName" type="xs:string" minOccurs="0" />
+                <xs:element name="UserDescription" type="xs:string" minOccurs="0" />
+                <xs:element name="SecondGroupName" type="xs:string" minOccurs="0" />
+                <xs:element name="Mode" type="xs:int" minOccurs="0" />
+                <xs:element name="NumberLoops" type="xs:int" minOccurs="0" />
+                <xs:element name="NumberLoops2" type="xs:int" minOccurs="0" />
+                <xs:element name="undoRecordAddingDisabled" type="xs:boolean" minOccurs="0" />
+                <xs:element name="undoRecordAddingDisabled2" type="xs:boolean" minOccurs="0" />
+                <xs:element name="ExecuteOnStartup" type="xs:boolean" minOccurs="0" />
+                <xs:element name="IfNot1" type="xs:boolean" minOccurs="0" />
+                <xs:element name="IfToolID1" type="xs:string" minOccurs="0" />
+                <xs:element name="IfToolGroupName1" type="xs:string" minOccurs="0" />
+                <xs:element name="IfNot2" type="xs:boolean" minOccurs="0" />
+                <xs:element name="IfToolID2" type="xs:string" minOccurs="0" />
+                <xs:element name="IfToolGroupName2" type="xs:string" minOccurs="0" />
+                <xs:element name="And" type="xs:boolean" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="CompositeToolSettings">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="ID" type="xs:string" minOccurs="0" />
+                <xs:element name="ToolGroupName" type="xs:string" minOccurs="0" />
+                <xs:element name="ToolName" type="xs:string" minOccurs="0" />
+                <xs:element name="InputString" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="CompositeToolSettings2">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="ID" type="xs:string" minOccurs="0" />
+                <xs:element name="ToolGroupName" type="xs:string" minOccurs="0" />
+                <xs:element name="ToolName" type="xs:string" minOccurs="0" />
+                <xs:element name="InputString" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <CompositeTools>
+    <ID>7d4deaff-dd6b-4d18-a37e-623b0bf6f1d6</ID>
+    <Name>Export to Houdini</Name>
+    <Mode>0</Mode>
+    <NumberLoops>1</NumberLoops>
+    <NumberLoops2>1</NumberLoops2>
+    <undoRecordAddingDisabled>false</undoRecordAddingDisabled>
+    <undoRecordAddingDisabled2>false</undoRecordAddingDisabled2>
+    <ExecuteOnStartup>false</ExecuteOnStartup>
+    <IfNot1>false</IfNot1>
+    <IfNot2>false</IfNot2>
+    <And>false</And>
+  </CompositeTools>
+  <CompositeToolSettings>
+    <ID>7d4deaff-dd6b-4d18-a37e-623b0bf6f1d6</ID>
+    <ToolGroupName>Common Modeling Shortcut Tools</ToolGroupName>
+    <ToolName>Clipboard Copy (obj)</ToolName>
+  </CompositeToolSettings>
+  <CompositeToolSettings>
+    <ID>7d4deaff-dd6b-4d18-a37e-623b0bf6f1d6</ID>
+    <ToolGroupName>Common Shortcut Tools</ToolGroupName>
+    <ToolName>Lauch App</ToolName>
+    <InputString>"pathToHoudiniFolder\bin\hython.exe"; "pathToHoudiniPythonLibs\nvil_houdini\export_from_nvil.py"</InputString>
+  </CompositeToolSettings>
+</NewDataSet>

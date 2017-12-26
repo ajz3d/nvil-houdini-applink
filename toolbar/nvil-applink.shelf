@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="nvil_houdini" label="NVil AppLink">
+    <memberTool name="start_rpc_server"/>
+    <memberTool name="export_to_nvil"/>
+  </toolshelf>
+
+  <tool name="export_to_nvil" label="Export to NVil" icon="$HOUDINI_USER_PREF_DIR/python2.7libs/nvil_houdini/img/nvil-logo.png">
+    <helpText><![CDATA[= Export to NVil =
+"""Exports selected SOP geometry to NVil."""]]></helpText>
+    <script scriptType="python"><![CDATA[import nvil_houdini.export_from_houdini
+reload(nvil_houdini.export_from_houdini)
+nvil_houdini.export_from_houdini.main()]]></script>
+  </tool>
+
+  <tool name="start_rpc_server" label="Start RPC Server" icon="$HOUDINI_USER_PREF_DIR/python2.7libs/nvil_houdini/img/hrpyc-logo.png">
+    <helpText><![CDATA[= Title =
+"""Starts the built-in RPC server."""]]></helpText>
+    <script scriptType="python"><![CDATA[import hrpyc
+hrpyc.start_server()]]></script>
+  </tool>
+</shelfDocument>
