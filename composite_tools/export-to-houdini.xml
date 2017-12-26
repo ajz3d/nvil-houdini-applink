@@ -82,6 +82,6 @@
     <ID>7d4deaff-dd6b-4d18-a37e-623b0bf6f1d6</ID>
     <ToolGroupName>Common Shortcut Tools</ToolGroupName>
     <ToolName>Lauch App</ToolName>
-    <InputString>"pathToHoudiniFolder\bin\hython.exe"; "pathToHoudiniPythonLibs\nvil_houdini\export_from_nvil.py"</InputString>
+    <InputString>"pathToHoudiniFolder\bin\hython.exe"; "pathToHoudiniPythonLibs\nvil_houdini\nvil_houdini_applink.py"</InputString>
   </CompositeToolSettings>
 </NewDataSet>

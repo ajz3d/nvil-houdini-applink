@@ -1,6 +1,6 @@
 # coding=utf8
 
-# ===== export_from_houdini.py
+# ===== nvil_houdini_applink.py
 #
 # Copyright (c) 2017 Artur J. Żarek
 #
@@ -19,9 +19,11 @@
 import hou
 import sys
 import os
+import time
+import rpyc
 
 
-def main():
+def export_from_houdini():
     selection = hou.selectedNodes()
     if len(selection) > 1:
         hou.ui.displayMessage('Only first object will be exported.', severity=hou.severityType.Warning)
@@ -34,24 +36,21 @@ def main():
         sys.exit(2)
 
     # Paths and files
-    appdata_path = hou.getenv('APPDATA')
-    nvil_appdata = os.path.join(appdata_path, 'DigitalFossils', 'NVil')
-    clipboard_file_path = os.path.join(nvil_appdata, 'Media', 'Clipboard', 'ClipboardObj.obj')
     instructions_filename = 'NVil Instructions.txt'
     message_filename = 'NVil Message_In.txt'
 
     # First, save the selected SOP to NVil clipboard directory.
-    selection[0].geometry().saveToFile(clipboard_file_path)
+    selection[0].geometry().saveToFile(get_path()['clipboard_file_path'])
 
     # Then, save instructions for NVil.
     instructions = ['TID Common Modeling Shortcut Tools >> Clipboard Paste']
-    abs_instructions_file_path = os.path.join(nvil_appdata, instructions_filename)
+    abs_instructions_file_path = os.path.join(get_path()['nvil_appdata'], instructions_filename)
     with open(abs_instructions_file_path, 'w') as out:
         for instruction in instructions:
             out.write(instruction)
 
     # Finally, tell NVil to import the file.
-    abs_message_file_path = os.path.join(nvil_appdata, message_filename)
+    abs_message_file_path = os.path.join(get_path()['nvil_appdata'], message_filename)
     try:
         with open(abs_message_file_path, 'w') as out:
             out.write('Execute External Instruction File')
@@ -63,5 +62,47 @@ def main():
     hou.ui.setStatusMessage('Done. You can now switch to NVil.', severity=hou.severityType.Message)
 
 
+def export_from_nvil(port=18811):
+    main_module = 'nvil_houdini.nvil_houdini_applink'
+    try:
+        conn = rpyc.classic.connect('localhost', port)
+        conn.execute('import ' + main_module)
+        conn.execute('reload(' + main_module + ')')
+        conn.execute(main_module + '.load_geo()')
+    except Exception:  # TODO: Too general.
+        print("There were errors. Have you started Houdini's RPC server?")
+        time.sleep(3)
+        sys.exit(1)
+
+
+def load_geo():
+    selected_nodes = hou.selectedNodes()
+    if len(selected_nodes) != 1:
+        hou.ui.displayMessage('You need to select a single SOP node.', severity=hou.severityType.Error)
+        sys.exit(2)
+    selection = selected_nodes[0]
+
+    if not isinstance(selection, hou.SopNode):
+        hou.ui.displayMessage('Selected node must be a SOP.', severity=hou.severityType.Error)
+        sys.exit(2)
+
+    nvil_import = hou.node(selection.parent().path()).createNode('file')
+    nvil_import.setFirstInput(selection)
+    nvil_import.moveToGoodPosition()
+
+    nvil_import.setParms({'file': get_path()['clipboard_file_path']})
+    nvil_import.setDisplayFlag(True)
+    selection.setRenderFlag(False)
+    nvil_import.setHardLocked(True)
+    nvil_import.setSelected(True, clear_all_selected=True)
+
+
+def get_path():
+    appdata_path = hou.getenv('APPDATA')
+    nvil_appdata = os.path.join(appdata_path, 'DigitalFossils', 'NVil')
+    clipboard_file_path = os.path.join(nvil_appdata, 'Media', 'Clipboard', 'ClipboardObj.obj')
+    return {'nvil_appdata': nvil_appdata, 'clipboard_file_path': clipboard_file_path}
+
+
 if __name__ == '__main__':
-    main()
+    export_from_nvil()
