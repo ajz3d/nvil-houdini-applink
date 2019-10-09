@@ -8,17 +8,18 @@
   <toolshelf name="nvil_houdini" label="NVil AppLink">
     <memberTool name="start_rpc_server"/>
     <memberTool name="export_to_nvil"/>
+    <memberTool name="import_from_nvil"/>
   </toolshelf>
 
-  <tool name="export_to_nvil" label="Export to NVil" icon="$HOUDINI_USER_PREF_DIR/python2.7libs/nvil_houdini/img/nvil-logo.png">
+  <tool name="export_to_nvil" label="Export" icon="$NVIL_APPLINK_DIR/config/Icons/nvil-logo.png">
     <helpText><![CDATA[= Export to NVil =
 """Exports selected SOP geometry to NVil."""]]></helpText>
-    <script scriptType="python"><![CDATA[import nvil_houdini.nvil_houdini_applink
-reload(nvil_houdini.nvil_houdini_applink)
-nvil_houdini.nvil_houdini_applink.export_from_houdini()]]></script>
+    <script scriptType="python"><![CDATA[import nvil_houdini_applink
+reload(nvil_houdini_applink)
+nvil_houdini_applink.export_from_houdini()]]></script>
   </tool>
 
-  <tool name="start_rpc_server" label="Start RPC Server" icon="$HOUDINI_USER_PREF_DIR/python2.7libs/nvil_houdini/img/hrpyc-logo.png">
+  <tool name="start_rpc_server" label="RPC" icon="$NVIL_APPLINK_DIR/config/Icons/hrpyc-logo.png">
     <helpText><![CDATA[= Title =
 """Starts the built-in RPC server."""]]></helpText>
     <script scriptType="python"><![CDATA[import hrpyc
