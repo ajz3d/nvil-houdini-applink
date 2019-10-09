@@ -77,27 +77,6 @@ When you're done editing it, select what you want to export and then launch *Exp
 
 See [[Importing from NVil][Importing from NVil]] for further steps.
 
-
-*** Wine/GNU+Linux
-
-
-## Instructions
-AppLink utilizes NVil's clipboard functionality. Geometry file exported from NVil or Houdini is stored in ```ClipboardObj.obj``` Wavefront OBJ file inside ```%APPDATA%\DigitalFossils\NVil\Media\Clipboard```. It will get overwritten on each import/export operation.
-
-For communication with Houdini, the program uses RPC calls, so the ```hrpyc``` server must be running.
-
-The AppLink shelf contains the following tools:
-
-- *Start RPC Server* - starts the RPC server,
-- *Export to NVil* - exports geometry from the currently selected SOP to NVil's clipboard location.
-
-### Exporting geometry from Houdini
-Select a single SOP node and click *Export to NVil* shelf button. After *"Done. You can now switch to NVil"* message appears in the status bar, you can switch to NVil and confirm the import. Your geometry will be merged with the current scene.
-
-### Exporting geometry from NVil
-In Houdini, make sure that at least one SOP node is selected. Switch to NVil, select objects that you want to export and start *"Composite Tools->Export to Houdini"* tool. Confirm export options and then switch back to Houdini. You will find a new hardlocked *file* surface operator piped to the SOP node that you have selected.
-
-
 *** Importing from NVil
 Importing from NVil happens automatically on Windows/Windows setup. If you're using Wine/GNU+Linux setup, it requires pressing the *Import* button.
 
