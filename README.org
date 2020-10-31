@@ -1,33 +1,42 @@
 #+STARTUP: indent
 * NVil-Houdini AppLink
-This program automates geometry interchange between NVil and Houdini.
+This program automates geometry interchange between NVil ([[http://digitalfossils.com/][Homepage]]/[[https://store.steampowered.com/app/592350/Nvil/][Steam]]) and Houdini.
 
 ** How does it work?
-Let's say you're modeling something in Houdini, but soon realize that some things would be faster to complete when done with a dedicated subd modeler. You select a SOP that you want to edit and click an export button on a toolbar this AppLink ships with. Your geometry is immediately exported to NVil where you can edit it. After you're done, you select objects for export and either launch AppLink's composite tool (also included) or File->Clipboard->Copy(obj) it. The first is available only on pure Windows setup and uses RPC to notify Houdini to load and freeze modified geometry as a new node. The latter requires you to manually press a shelf button in Houdini to load modified geometry back, and is a workaround to a problem with lack of network communication between Wine and its host OS (who knows, it might be resolved eventually). In both cases the frozen file SOP will be added either as an orphan, somwhere in your current ObjNode, or as a child of a selected node.
+Let's say you're modeling an object in Houdini, but soon realize that some things would be faster to complete when done with NVil - a dedicated modeling program.
+
+With NVil open in the background you can select a SOP that you want to edit and click on /export/ button on a toolbar that is included with this AppLink. Your geometry will be immediately exported to NVil via Houdini's internal OBJ exporter and saved to NVil ~%APPDATA%\DigitalFossils\NVil\Media\Clipboard\ClipboardObj.obj~ file.
+
+After you're done modeling in NVil, you can select objects which you want to export, and execute /Export to Houdini/ composite tool (also included).
+
+On Windows, import process in Houdini is automated via Python RPC module (~rpyc~/~hrpyc~). On GNU/Linux, you need to manually execute /Import/ shelf tool.
 
 ** Requirements
 *** Possible setups
-Like it was mentioned above, the AppLink works with the following configurations:
-- NVil and Houdini installed on MS Windows (I tested and used it on Windows 7 only, and frankly, due to lack of access to MS OS, I cannot test the AppLink on this system anymore), later in the text referred as "Windows/Windows".
-- NVil installed on a ~WINEPREFIX~, Houdini installed its host GNU/Linux operating system. Referred as "Wine/GNU+Linux".
+The AppLink works and has been tested on the following configurations:
+- (Deprecated) NVil and Houdini installed on MS Windows 7. I didn't test it on later Windows versions and I also will have no plans of supporting this system simply because I no longer have access to a machine running it. Forks and pull requests are welcome.
+- NVil installed in ~WINEPREFIX~ (GNU/Linux).
 
-*** Python
-Python 2.7.x (or Hython if your paths are correctly configured to include SideFX modules).
-~pip~ installed and up-to-date.
+*** Common
+**** Python
+Python 2.7.x and ~pip~.
 
-*** Network ports
-When running both programs on Windows, port 18811 must be open for communication as this the default port used by ~hrpyc~.
-
-*** rpyc
-On Windows/Windows you will also need to install ~rpyc~ with ~pip~:
+*** Windows
+**** Python RPC Module
+Used for communication with Houdini ~hrpyc~ server.
 #+BEGIN_SRC shell
 pip install rpyc
 #+END_SRC
 
-** Installation
-I have simplified the installation process since the initial version of this AppLink, so it's not as convoluted as it's used to be.
+**** Network ports
+When running both programs on Windows, port 18811 must be open for communication as this the default port used by ~hrpyc~.
 
-Start by cloning the repo into your ~$HOUDINI_USER_PREF_DIR~. On Windows its typically your ~Documents~ directory. On GNU/Linux its whatever you tell it to be. Or just download the repo manually and unpack it there.
+*** GNU/Linux
+**** Wine
+Necessary to run NVil.
+
+** Installation
+Start by cloning the repo into your ~$HOUDINI_USER_PREF_DIR~. On Windows it's usually your ~Documents\houdini_something~ directory. On GNU/Linux it's whatever you tell it to be. You can also download the repo manually and unpack it that location.
 
 *** houdini.env
 You need to put the following global variables in your ~houdini.env~ file (or define them system-wide):
@@ -35,10 +44,11 @@ You need to put the following global variables in your ~houdini.env~ file (or de
 NVIL_APPLINK_DIR=
 WIN_APPDATA=
 #+END_SRC
-~NVIL_APPLINK_DIR~ currently it's only used by the shelf to tell it where the icons are located.
-~WIN_APPDATA~ is the path to your Windows user's %APPDATA%, usually found in ~c:\Users\username\Application Data~.
 
-**** Windows/Windows example:
+~NVIL_APPLINK_DIR~ currently it's only used by the shelf to tell it where the icons are located.
+~WIN_APPDATA~ is the path to your Windows user's %APPDATA%, usually found in ~C:\Users\username\Application Data~.
+
+**** Windows example:
 #+BEGIN_SRC sh
 NVIL_APPLINK_DIR="c:\Users\YourUser\Documents\Houdini 17.5"
 WIN_APPDATA="c:\Users\YourUser\Application Data"
@@ -46,13 +56,13 @@ WIN_APPDATA="c:\Users\YourUser\Application Data"
 
 Theoretically, you could try using ~%HOME%\Documents\Houdini 17.5~ in ~NVIL_APPLINK_DIR~, and ~%APPDATA%~ in ~WIN_APPDATA~, but I cannot test it anymore so I can just speculate on whether it would work or not.
 
-**** Wine/GNU+Linux example:
+**** GNU/Linux example:
 #+BEGIN_SRC sh
 NVIL_APPLINK_DIR="$HOUDINI_USER_PREF_DIR/nvil-houdini-applink"
 WIN_APPDATA="$HOME/wineprefix/drive_c/users/youruser/Application Data"
 #+END_SRC
 
-*** Additional steps for Windows/Windows setup
+*** Additional steps for Windows
 Open NVil and choose Composite Tools->Import Composite Tools. Point at ~composite_tools/export-to-houdini.xml~ in the repo to install it.
 
 Dive into Edit->Customize->Composite Tools, select ~Export to Houdini~ tool and then ~Common Shortcut Tools >> Launch App(*)~ from /Set 1/.
@@ -91,5 +101,3 @@ By selecting nothing, a loose and frozen ~file~ operator linking to ~$WIN_APPDAT
 By selecting a SOP node, the same frozen ~file~ SOP will be created, but it will become a child of the selected node.
 
 And that's it.
-
-
