@@ -13,15 +13,17 @@
 
   <tool name="import_from_nvil" label="Import" icon="$NVIL_APPLINK_DIR/config/Icons/nvil-logo.png">
     <script scriptType="python"><![CDATA[import nvil_houdini_applink
-reload(nvil_houdini_applink)
+import importlib
+importlib.reload(nvil_houdini_applink)
 nvil_houdini_applink.load_geo()]]></script>
   </tool>
-  
+
   <tool name="export_to_nvil" label="Export" icon="$NVIL_APPLINK_DIR/config/Icons/nvil-logo.png">
     <helpText><![CDATA[= Export to NVil =
 """Exports selected SOP geometry to NVil."""]]></helpText>
     <script scriptType="python"><![CDATA[import nvil_houdini_applink
-reload(nvil_houdini_applink)
+import importlib
+importlib.reload(nvil_houdini_applink)
 nvil_houdini_applink.export_from_houdini()]]></script>
   </tool>
 
