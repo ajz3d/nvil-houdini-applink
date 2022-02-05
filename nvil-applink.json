@@ -1,0 +1,20 @@
+{
+    "path": "$NVIL_APPLINK",
+    "enable": "houdini_version >= '18.0' and houdini_version <= '19.0'",
+    "env": [
+        {
+            "nvil_applink_current_version": "MANUAL"
+        },
+        {
+            "NVIL_APPLINK": "$HOUDINI_PACKAGE_PATH/nvil-applink"
+        },
+        {
+            "PATH": {
+                "method": "prepend",
+                "value": [
+                    "$NVIL_APPLINK/bin"
+                ]
+            }
+        }
+    ]
+}
