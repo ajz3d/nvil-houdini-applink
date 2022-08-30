@@ -115,7 +115,7 @@ def get_path():
     """Returns required paths."""
     # appdata_path = hou.getenv('APPDATA')
     appdata_path = hou.expandString("$WIN_APPDATA")
-    nvil_appdata = os.path.join(appdata_path, 'DigitalFossils', 'NVil')
+    nvil_appdata = os.path.join(appdata_path, 'Roaming', 'DigitalFossils', 'NVil')
     clipboard_file_path = os.path.join(nvil_appdata, 'Media', 'Clipboard',
                                        'ClipboardObj.obj')
     return {'nvil_appdata': nvil_appdata,
