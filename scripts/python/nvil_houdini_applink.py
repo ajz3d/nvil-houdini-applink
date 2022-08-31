@@ -2,7 +2,7 @@
 
 # ===== nvil_houdini_applink.py
 #
-# Copyright (c) 2017-2019 Artur J. Żarek
+# Copyright (c) 2017-2022 Artur J. Żarek (ajz3d)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,90 @@ import sys
 import os
 import time
 import rpyc
+from pathlib import Path, PurePath
+
+
+INSTRUCTIONS_FILE = 'NVil Instructions.txt'
+MESSAGE_FILE = 'NVil Message_In.txt'
+CLIPBOARD = PurePath('Media/Clipboard')
+
+
+def houdini_export_fbx():
+    """Merges and exports selected SOPs to NVil clipboard file."""
+    # Abort if something is not right with WIN_APPDATA path.
+    nvil_appdata_path = Path(hou.getenv("NVIL_APPDATA"))
+    if not nvil_appdata_path.exists() or not nvil_appdata_path.is_dir():
+        hou.ui.setStatusMessage(
+            f'Path {nvil_appdata_path} does not exist or is a file.',
+            severity=hou.severityType.Error)
+        return
+    clipboard_path = Path(nvil_appdata_path, CLIPBOARD)
+
+    sops = hou.selectedNodes()
+
+    # Check if anything is selected.
+    if len(sops) == 0:
+        hou.ui.setStatusMessage('Nothing to export',
+                                severity=hou.severityType.ImportantMessage)
+        return
+
+    # Abort if one of the nodes is not a SOP.
+    for sop in sops:
+        if type(sop) is not hou.SopNode:
+            hou.ui.setStatusMessage(f'Wrong candidate: {type(sop)}.',
+                                    severity=hou.severityType.Error)
+            return
+
+    # All selected nodes will be merged together.
+    merge = sops[0].parent().createNode('merge')
+    rop_fbx = sops[0].parent().createNode('rop_fbx')
+
+    operators = []
+
+    # Start creating temporary network.
+    for sop in sops:
+       if not type(sop) == hou.SopNode:
+           continue
+       merge.setNextInput(sop)
+
+    rop_fbx.setInput(0, merge)
+    rop_fbx.setParms({
+        'sopoutput': str(Path(clipboard_path, 'ClipboardFbx.fbx')),
+        'exportkind': False,
+        'buildfrompath': True,
+        'pathattrib': 'name'
+    })
+    rop_fbx.parm('execute').pressButton()
+
+    rop_fbx.destroy()
+    merge.destroy()
+
+    # Save instructions for NVil.
+    # instructions = ['TID Object Shortcut Tools >> Create Box #']
+    instructions = ['TID Common Modeling Shortcut Tools >> Clipboard Paste']
+    instructions_path = Path(nvil_appdata_path, INSTRUCTIONS_FILE)
+    with instructions_path.open('w', encoding='utf-8') as target_file:
+        for instruction in instructions:
+            target_file.write(instruction)
+        target_file.write('\n')
+
+    # Write a message that tells NVil to load these instructions.
+    message = 'Execute External Instruction File'
+    message_path = Path(nvil_appdata_path, MESSAGE_FILE)
+
+    try:
+        with message_path.open('w', encoding='utf-8') as target_file:
+            target_file.write(message)
+    except IOError:
+        hou.ui.setStatusMessage(
+            'Message file locked.' \
+            'Switch to NVil and check if the import dialog is closed.',
+            severity=hou.severityType.Error
+        )
+        return
+
+    hou.ui.setStatusMessage('Done exporting. You can switch to NVil.')
+
 
 
 def export_from_houdini():
