@@ -17,10 +17,6 @@
 # limitations under the License.
 
 import hou
-import sys
-import os
-import time
-import rpyc
 from pathlib import Path, PurePath
 
 
@@ -188,28 +184,6 @@ def is_path_valid(path: Path) -> bool:
             severity=hou.severityType.Error)
         return False
     return True
-
-
-def get_path():
-    """Returns required paths."""
-    # TODO: Remove get_path() function.
-    # appdata_path = hou.getenv('APPDATA')
-    appdata_path = hou.expandString("$WIN_APPDATA")
-    nvil_appdata = os.path.join(appdata_path, 'Roaming', 'DigitalFossils', 'NVil')
-    clipboard_file_path = os.path.join(nvil_appdata, 'Media', 'Clipboard',
-                                       'ClipboardObj.obj')
-    return {'nvil_appdata': nvil_appdata,
-            'clipboard_file_path': clipboard_file_path}
-
-
-def get_current_network_editor(desktop):
-    """Returns the currently active Network Editor window.
-    :type desktop: hou.Desktop
-    :rtype: hou.NetworkEditor"""
-    # TODO: Remove get_current_network_editor() function.
-    for pane in desktop.paneTabs():
-        if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
-            return pane
 
 
 if __name__ == '__main__':
