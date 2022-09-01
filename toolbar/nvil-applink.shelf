@@ -10,7 +10,7 @@
     <memberTool name="import_obj_from_nvil"/>
   </toolshelf>
 
-  <tool name="export_obj_to_nvil" label="Yank OBJ to NVil Clipboard" icon="PLASMA_App">
+  <tool name="export_obj_to_nvil" label="Yank OBJ" icon="export_obj.svg">
     <toolMenuContext name="viewer">
       <contextNetType>SOP</contextNetType>
     </toolMenuContext>
@@ -24,7 +24,7 @@ importlib.reload(nvil_houdini_applink)
 nvil_houdini_applink.houdini_export()]]></script>
   </tool>
 
-  <tool name="import_obj_from_nvil" label="Paste OBJ (NVil)" icon="PLASMA_App">
+  <tool name="import_obj_from_nvil" label="Paste OBJ" icon="import_obj.svg">
     <toolMenuContext name="viewer">
       <contextNetType>SOP</contextNetType>
     </toolMenuContext>
