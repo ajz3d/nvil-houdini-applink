@@ -1,103 +1,62 @@
 #+STARTUP: indent
 * NVil-Houdini AppLink
-This program automates geometry interchange between NVil ([[http://digitalfossils.com/][Homepage]]/[[https://store.steampowered.com/app/592350/Nvil/][Steam]]) and Houdini.
+This program automates geometry exchange between NVil ([[http://digitalfossils.com/][Homepage]]/[[https://store.steampowered.com/app/592350/Nvil/][Steam]]) and [[https://www.sidefx.com/products/houdini/][Houdini]].
 
 ** How does it work?
-Let's say you're modeling an object in Houdini, but soon realize that some things would be faster to complete when done with NVil - a dedicated modeling program.
+If you're modeling an object in Houdini, but soon realize that some things would be faster to do in NVil, with this program you can send selected SOP to NVil with a single mouse-click.
+Similarly, you can send selected objects from NVil to Houdini SOP network.
 
-With NVil open in the background you can select a SOP that you want to edit and click on /export/ button on a toolbar that is included with this AppLink. Your geometry will be immediately exported to NVil via Houdini's internal OBJ exporter and saved to NVil ~%APPDATA%\DigitalFossils\NVil\Media\Clipboard\ClipboardObj.obj~ file.
+*** Exporting from Houdini to NVil
+With NVil open in the background select a SOP or multiple SOPs that you want to export and click on /Yank (OBJ)/ button on "NVil Clipboard" toolbar that is included with this program.
+Your geometry will be immediately exported to NVil via Houdini's.
+In NVil, depending on your settings in, you will be presented with an import settings dialog or already imported objects.
 
-After you're done modeling in NVil, you can select objects which you want to export, and execute /Export to Houdini/ composite tool (also included).
+*** Exporting from NVil to Houdini
+Simply select objects to export and select "File → Clipboard (obj)".
+It might be convenient to create a custom button or hotkey to issue this command.
 
-On Windows, import process in Houdini is automated via Python RPC module (~rpyc~/~hrpyc~). On GNU/Linux, you need to manually execute /Import/ shelf tool.
+In Houdini, point where you want to import the objects by selecting a SOP.
+Press the "Paste (obj)" button located on the "NVil Clipboard" shelf.
+A stash node will be created and will be piped to selected SOP.
 
 ** Requirements
-*** Possible setups
-The AppLink works and has been tested on the following configurations:
-- (Deprecated) NVil and Houdini installed on MS Windows 7. I didn't test it on later Windows versions and I also will have no plans of supporting this system simply because I no longer have access to a machine running it. Forks and pull requests are welcome.
-- NVil installed in ~WINEPREFIX~ (GNU/Linux).
-
-*** Common
-**** Python
-Python 2.7.x and ~pip~.
-
-*** Windows
-**** Python RPC Module
-Used for communication with Houdini ~hrpyc~ server.
-#+BEGIN_SRC shell
-pip install rpyc
-#+END_SRC
-
-**** Network ports
-When running both programs on Windows, port 18811 must be open for communication as this the default port used by ~hrpyc~.
-
-*** GNU/Linux
-**** Wine
-Necessary to run NVil.
+- Houdini 19.5+ with Python3.
+  Might work on older Py3 Houdini versions as well.
+- The program has been tested on GNU/Linux with NVil running in [[https://www.winehq.org/][Wine]] ~WINEPREFIX~, installed with [[https://github.com/ajz3d/lutris-nvil-installation-scripts][this]] [[https://lutris.net/][Lutris]] installation script.
+  I have not tested this program with NVil installed in its native environment --- MS Windows, but it should work fine.
+  Let me know in the issues section if it doesn't.
+- In NVil, "3D Coat AppLink" must be enabled in "File → 3D-Coat AppLink → 3D-Coat AppLink Enabled".
+  However strange it may sound, 3D-Coat AppLink is required for NVil to process external instructions that this program leverages.
 
 ** Installation
-Start by cloning the repo into your ~$HOUDINI_USER_PREF_DIR~. On Windows it's usually your ~Documents\houdini_something~ directory. On GNU/Linux it's whatever you tell it to be. You can also download the repo manually and unpack it that location.
+Start by cloning the repo into your ~$HOUDINI_USER_PREF_DIR/packages~ directory:
+#+begin_src sh
+cd $HOUDINI_USER_PREF_DIR/packages
+git clone https://github.com/ajz3d/nvil-houdini-applink.git
+#+end_src
 
-*** houdini.env
-You need to put the following global variables in your ~houdini.env~ file (or define them system-wide):
-#+BEGIN_SRC sh
-NVIL_APPLINK_DIR=
-WIN_APPDATA=
+If you didn't define ~$HOUDINI_USER_PREF_DIR~, then you will find Houdini preferences directory in ~$HOME/username/.houdinixx.x~.
+
+You need to put ~$NVIL_APPDATA~ global variable in your ~houdini.env~ file (or define it system-wide):
+#+BEGIN_SRC bash
+# houdini.env
+NVIL_APPDATA=/path/to/nvil/clipboard
 #+END_SRC
 
-~NVIL_APPLINK_DIR~ currently it's only used by the shelf to tell it where the icons are located.
-~WIN_APPDATA~ is the path to your Windows user's %APPDATA%, usually found in ~C:\Users\username\Application Data~.
+~NVIL_APPDATA~ must contain the path to NVil application data.
 
-**** Windows example:
-#+BEGIN_SRC sh
-NVIL_APPLINK_DIR="c:\Users\YourUser\Documents\Houdini 17.5"
-WIN_APPDATA="c:\Users\YourUser\Application Data"
-#+END_SRC
+On Windows it's in ~%APPDATA%\Roaming\DigitalFossils\NVil~ path, which depending on MS Windows version is one of these locations:
+#+begin_src
+C:\Users\username\AppData\Roaming\DigitalFossils\NVil
+C:\Users\username\Application Data\Roaming\DigitalFossils\NVil
+#+end_src
 
-Theoretically, you could try using ~%HOME%\Documents\Houdini 17.5~ in ~NVIL_APPLINK_DIR~, and ~%APPDATA%~ in ~WIN_APPDATA~, but I cannot test it anymore so I can just speculate on whether it would work or not.
+For NVil ~WINEPREFIX~ installed in ~/home/username/.opt/nvil-mono~, the variable should look like this:
+#+begin_src bash
+# houdini.env
+NVIL_APPDATA="/home/username/.opt/nvil-mono/drive_c/users/AppData/Roaming/DigitalFossils/NVil
+#+end_src
 
-**** GNU/Linux example:
-#+BEGIN_SRC sh
-NVIL_APPLINK_DIR="$HOUDINI_USER_PREF_DIR/nvil-houdini-applink"
-WIN_APPDATA="$HOME/wineprefix/drive_c/users/youruser/Application Data"
-#+END_SRC
+If Houdini is running in the background, restart it.
 
-*** Additional steps for Windows
-Open NVil and choose Composite Tools->Import Composite Tools. Point at ~composite_tools/export-to-houdini.xml~ in the repo to install it.
-
-Dive into Edit->Customize->Composite Tools, select ~Export to Houdini~ tool and then ~Common Shortcut Tools >> Launch App(*)~ from /Set 1/.
-
-In /Param input string/, modify ~Path(string)~ parameter to point at your Python 2.7.x executable, for example: ~c:\Python27\python.exe~.
-~Arguments(path)~ should by default be okay and set to ~nvil_houdini_applink.py~. This tells NVil to launch the module after ~Clipboard Copy (obj)~ command, which will point Python to ~nvil_houdini_applink.export_from_nvil()~.
-
-** How to use the AppLink?
-In both setups, make sure that both: NVil and Houdini have been started. ;)
-
-*** Windows/Windows
-Start ~hrpyc~ server by clicking the *RPC* button located on  *NVil AppLink* shelf, or just type:
-#+BEGIN_SRC python
-import hrpyc
-hrpyc.start_server()
-#+END_SRC
-in the Houdini's Python shell. This will get RPC server up and running and listening on default port 18811.
-
-To export your model to NVil, select a SOP containing polygonal geometry and hit *Export* shelf tool. This saves your geo to ~$WIN_APPDATA/DigitalFossils/Media/Clipboard/ClipboardObj.obj~ and instructs NVil to load the file. You will be taken to NVil's window with import/export options modal window open. After clicking *OK*, NVil will load the model.
-
-When you're done editing it, select what you want to export and then launch *Export to Houdini* composite tool. You will once again be presented with import/export modal window and after clicking OK, the model will be passed to Houdini.
-
-See [[Importing from NVil][Importing from NVil]] for further steps.
-
-*** Importing from NVil
-Importing from NVil happens automatically on Windows/Windows setup. If you're using Wine/GNU+Linux setup, it requires pressing the *Import* button.
-
-Import will either succeed or fail, depending on where you were in Houdini network at the moment of importing the modified geometry, and which node you had selected at that moment.
-
-There are two rules guaranteeing successful import:
-1. You need to be inside an ~ObjNode~, like ~geo~ SOP.
-2. You need to have either nothing, or a ~SopNode~ selected.
-
-By selecting nothing, a loose and frozen ~file~ operator linking to ~$WIN_APPDATA/DigitalFossils/Media/Clipboard/ClipboardObj.obj~ will be created in the current network path.
-
-By selecting a SOP node, the same frozen ~file~ SOP will be created, but it will become a child of the selected node.
-
-And that's it.
+Add "NVil AppLink" shelf to your shelf set.
