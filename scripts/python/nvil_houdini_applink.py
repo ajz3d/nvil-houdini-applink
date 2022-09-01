@@ -24,21 +24,23 @@ import rpyc
 from pathlib import Path, PurePath
 
 
+PATH_NVIL_APPDATA = Path(hou.getenv("NVIL_APPDATA"))
+PATH_CLIPBOARD = Path(PATH_NVIL_APPDATA, 'Media/Clipboard')
 INSTRUCTIONS_FILE = 'NVil Instructions.txt'
 MESSAGE_FILE = 'NVil Message_In.txt'
-CLIPBOARD = PurePath('Media/Clipboard')
+FILE_FBX = PurePath('ClipboardFbx.fbx')
+FILE_OBJ = PurePath('ClipboardObj.obj')
 
 
-def houdini_export_fbx():
+def houdini_export(format: str = 'obj'):
     """Merges and exports selected SOPs to NVil clipboard file."""
-    # Abort if something is not right with WIN_APPDATA path.
-    nvil_appdata_path = Path(hou.getenv("NVIL_APPDATA"))
-    if not nvil_appdata_path.exists() or not nvil_appdata_path.is_dir():
-        hou.ui.setStatusMessage(
-            f'Path {nvil_appdata_path} does not exist or is a file.',
-            severity=hou.severityType.Error)
+    # Abort if something is not right with NVIL_APPDATA and CLIPBOARD paths.
+    # clipboard_path = Path(nvil_appdata_path, CLIPBOARD)
+    if not is_path_valid(PATH_NVIL_APPDATA):
         return
-    clipboard_path = Path(nvil_appdata_path, CLIPBOARD)
+
+    if not is_path_valid(PATH_CLIPBOARD):
+        return
 
     sops = hou.selectedNodes()
 
@@ -57,9 +59,7 @@ def houdini_export_fbx():
 
     # All selected nodes will be merged together.
     merge = sops[0].parent().createNode('merge')
-    rop_fbx = sops[0].parent().createNode('rop_fbx')
-
-    operators = []
+    groups_from_name = sops[0].parent().createNode('groupsfromname')
 
     # Start creating temporary network.
     for sop in sops:
@@ -67,22 +67,33 @@ def houdini_export_fbx():
            continue
        merge.setNextInput(sop)
 
-    rop_fbx.setInput(0, merge)
-    rop_fbx.setParms({
-        'sopoutput': str(Path(clipboard_path, 'ClipboardFbx.fbx')),
-        'exportkind': False,
-        'buildfrompath': True,
-        'pathattrib': 'name'
-    })
-    rop_fbx.parm('execute').pressButton()
+    groups_from_name.setInput(0, merge)
 
-    rop_fbx.destroy()
+    # Two options: FBX or OBJ.
+    if format == 'fbx':
+        rop = sops[0].parent().createNode('rop_fbx')
+        rop.setParms({
+            'sopoutput': str(Path(PATH_CLIPBOARD, 'ClipboardFbx.fbx')),
+            'exportkind': False,
+            'buildfrompath': True,
+            'pathattrib': 'name'
+        })
+    else:
+        rop = sops[0].parent().createNode('rop_geometry')
+        rop.setParms({
+            'sopoutput': str(Path(PATH_CLIPBOARD, FILE_OBJ))
+        })
+    rop.setInput(0, groups_from_name)
+    rop.parm('execute').pressButton()
+
+    rop.destroy()
+    groups_from_name.destroy()
     merge.destroy()
 
     # Save instructions for NVil.
     # instructions = ['TID Object Shortcut Tools >> Create Box #']
     instructions = ['TID Common Modeling Shortcut Tools >> Clipboard Paste']
-    instructions_path = Path(nvil_appdata_path, INSTRUCTIONS_FILE)
+    instructions_path = Path(PATH_NVIL_APPDATA, INSTRUCTIONS_FILE)
     with instructions_path.open('w', encoding='utf-8') as target_file:
         for instruction in instructions:
             target_file.write(instruction)
@@ -90,8 +101,10 @@ def houdini_export_fbx():
 
     # Write a message that tells NVil to load these instructions.
     message = 'Execute External Instruction File'
-    message_path = Path(nvil_appdata_path, MESSAGE_FILE)
+    message_path = Path(PATH_NVIL_APPDATA, MESSAGE_FILE)
 
+    # If import dialog is open, this will throw IOError,
+    # so an exception handle is required.
     try:
         with message_path.open('w', encoding='utf-8') as target_file:
             target_file.write(message)
@@ -105,6 +118,76 @@ def houdini_export_fbx():
 
     hou.ui.setStatusMessage('Done exporting. You can switch to NVil.')
 
+
+def houdini_import(format: str='obj'):
+    """Imports NVil clipboard into SOP network."""
+    # First check if paths exist.
+    if not is_path_valid(PATH_NVIL_APPDATA):
+        return
+
+    if not is_path_valid(PATH_CLIPBOARD):
+        return
+
+    # Check if there's anything to import.
+    file_missing = False
+
+    if format == 'fbx':
+        if not Path(PATH_CLIPBOARD, FILE_FBX).is_file():
+            file_missing = True
+    else:
+        if not Path(PATH_CLIPBOARD, FILE_OBJ).is_file():
+            file_missing = True
+
+    if file_missing:
+        hou.ui.setStatusMessage('Nothing to import.',
+                                severity=hou.severityType.ImportantMessage)
+        return
+
+    # Verify selection.
+    sops = hou.selectedNodes()
+
+    if len(sops) == 0:
+        hou.ui.setStatusMessage('Select a SOP.',
+                                severity=hou.severityType.ImportantMessage)
+        return
+
+    sop = sops[0]
+    parent = sop.parent()
+
+    if not type(sop) == hou.SopNode:
+        hou.ui.setStatusMessage('Selected operator is not a SOP',
+                                severity=hou.severityType.ImportantMessage)
+        return
+
+    # Import cases for FBX and OBJ.
+    if format == 'fbx':
+        # TODO: Implement FBX import.
+        return
+    else:
+        input = parent.createNode('file')
+        input.setParms({
+            'file': str(Path(PATH_CLIPBOARD, FILE_OBJ))
+        })
+
+    input.setInput(0, sop)
+    stash = parent.createNode('stash')
+    stash.setInput(0, input)
+    stash.parm('stashinput').pressButton()
+    input.destroy()
+    stash.moveToGoodPosition(move_inputs=False, move_unconnected=False)
+
+    hou.ui.setStatusMessage('Done exporting.',
+                            severity=hou.severityType.Message)
+
+
+def is_path_valid(path: Path) -> bool:
+    """Checks if $NVIL_APPDATA path exists and is not a file."""
+    if not path.exists() or not path.is_dir():
+        hou.ui.setStatusMessage(
+            f'Path {path} does not exist or is a file.',
+            severity=hou.severityType.Error)
+        return False
+    return True
 
 
 def export_from_houdini():

@@ -9,6 +9,8 @@
     <memberTool name="start_rpc_server"/>
     <memberTool name="export_to_nvil"/>
     <memberTool name="import_from_nvil"/>
+    <memberTool name="export_obj_to_nvil"/>
+    <memberTool name="import_obj_from_nvil"/>
   </toolshelf>
 
   <tool name="import_from_nvil" label="Import" icon="$NVIL_APPLINK_DIR/config/Icons/nvil-logo.png">
@@ -32,5 +34,33 @@ nvil_houdini_applink.export_from_houdini()]]></script>
 """Starts the built-in RPC server."""]]></helpText>
     <script scriptType="python"><![CDATA[import hrpyc
 hrpyc.start_server()]]></script>
+  </tool>
+
+  <tool name="export_obj_to_nvil" label="Yank OBJ to NVil Clipboard" icon="PLASMA_App">
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolSubmenu>Export</toolSubmenu>
+    <script scriptType="python"><![CDATA[import nvil_houdini_applink
+import importlib
+importlib.reload(nvil_houdini_applink)
+nvil_houdini_applink.houdini_export()]]></script>
+  </tool>
+
+  <tool name="import_obj_from_nvil" label="Paste OBJ (NVil)" icon="PLASMA_App">
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolSubmenu>Import</toolSubmenu>
+    <script scriptType="python"><![CDATA[import nvil_houdini_applink
+import importlib
+importlib.reload(nvil_houdini_applink)
+nvil_houdini_applink.houdini_import()]]></script>
   </tool>
 </shelfDocument>
