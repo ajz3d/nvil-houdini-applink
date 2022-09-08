@@ -8,6 +8,7 @@
   <toolshelf name="nvil_houdini" label="NVil AppLink">
     <memberTool name="export_obj_to_nvil"/>
     <memberTool name="import_obj_from_nvil"/>
+    <memberTool name="export_fbx_to_nvil"/>
   </toolshelf>
 
   <tool name="export_obj_to_nvil" label="Yank OBJ" icon="export_obj.svg">
@@ -18,10 +19,10 @@
       <contextNetType>SOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Export</toolSubmenu>
-    <script scriptType="python"><![CDATA[import nvil_houdini_applink
+    <script scriptType="python"><![CDATA[import nvil_houdini
 import importlib
-importlib.reload(nvil_houdini_applink)
-nvil_houdini_applink.houdini_export()]]></script>
+importlib.reload(nvil_houdini)
+nvil_houdini.houdini_export()]]></script>
   </tool>
 
   <tool name="import_obj_from_nvil" label="Paste OBJ" icon="import_obj.svg">
@@ -34,7 +35,14 @@ nvil_houdini_applink.houdini_export()]]></script>
     <toolSubmenu>Import</toolSubmenu>
     <script scriptType="python"><![CDATA[import nvil_houdini_applink
 import importlib
-importlib.reload(nvil_houdini_applink)
-nvil_houdini_applink.houdini_import()]]></script>
+importlib.reload(nvil_houdini)
+nvil_houdini.houdini_import()]]></script>
+  </tool>
+
+  <tool name="export_fbx_to_nvil" label="Yank FBX" icon="export_obj.svg">
+    <script scriptType="python"><![CDATA[import nvil_houdini
+import importlib
+importlib.reload(nvil_houdini)
+nvil_houdini.houdini_export(format='fbx')]]></script>
   </tool>
 </shelfDocument>
