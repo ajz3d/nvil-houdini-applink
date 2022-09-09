@@ -26,7 +26,8 @@ from pathlib import Path, PurePath, PureWindowsPath
 CURRENT_USER = getpass.getuser()
 NVIL_APPDATA = Path(hou.getenv('NVIL_APPDATA'))
 TMP_PATH = Path(tempfile.gettempdir(), 'houdini-nvil')
-FILE_PREFIX = 'clipboard'
+FILE_PREFIX_HOU = 'hou'
+FILE_PREFIX_NVIL = 'nvil'
 MSG_FILENAME = 'NVil Message_In.txt'
 
 
@@ -35,12 +36,7 @@ def houdini_export_linux(format: str = 'obj'):
     # Do a simple check of the $NVIL_WINEPREFIX envvar.
     # See if it is a directory and if it contains drive_c path.
     # Abort if something is not right.
-    if NVIL_APPDATA is None \
-       or not NVIL_APPDATA.is_dir():
-        hou.ui.setStatusMessage(
-            'Invalid $NVIL_WINEPREFIX.',
-            severity=hou.severityType.Error
-        )
+    if not is_appdata_valid():
         return
 
     sops = hou.selectedNodes()
@@ -81,7 +77,7 @@ def houdini_export_linux(format: str = 'obj'):
         rop = sops[0].parent().createNode('rop_geometry')
 
     rop.setParms({
-        'sopoutput': str(Path(TMP_PATH, f'{FILE_PREFIX}.{format}'))
+        'sopoutput': str(Path(TMP_PATH, f'{FILE_PREFIX_HOU}.{format}'))
     })
     rop.setInput(0, groups_from_name)
     rop.parm('execute').pressButton()
@@ -92,7 +88,7 @@ def houdini_export_linux(format: str = 'obj'):
 
     # Construct absolute path to the exported file.
     # By default root is z: in Wine, so we'll use that to our advantage.
-    pure_win_path = PureWindowsPath('z:', TMP_PATH, f'{FILE_PREFIX}.{format}')
+    pure_win_path = PureWindowsPath('z:', TMP_PATH, f'{FILE_PREFIX_HOU}.{format}')
     # Tell NVil to import exported file.
     instructions = [
         f'TID Common Modeling Shortcut Tools >> ' \
@@ -110,13 +106,65 @@ def houdini_export_windows(format: str='obj'):
 
 
 def houdini_import_linux(format: str='obj'):
-    # TODO: Implement houdini_import_linux function.
-    pass
+    """Imports NVil clipboard into SOP network."""
+    # Check if there is anything to import.
+    # For OBJ and FBX files, depending on chosen format.
+    if not Path(TMP_PATH, f'FILE_PREFIX.{format}').exists():
+        hou.ui.setStatusMessage(
+            'Nothing to import.',
+            severity=hou.severityType.ImportantMessage
+        )
+
+    # Verify selection. Abort if first selected operator is not a SOP.
+    sops = hou.selectedNodes()
+    if len(sops) == 0:
+        hou.ui.setStatusMessage(
+            'Select at least one SOP.',
+            severity=hou.severityType.ImportantMessage
+        )
+    sop = sops[0]
+    if not type(sop) == hou.SopNode:
+        hou.ui.setStatusMessage(
+            'Selected operator is not a SOP.',
+            severity=hou.severityType.ImportantMessage
+        )
+        return
+
+    # Import the file.
+    parent = sop.parent()
+    input = parent.createNode('file')
+    input.setParms({
+        'file': str(Path(TMP_PATH, f'{FILE_PREFIX_NVIL}.{format}'))
+    })
+
+    input.setInput(0, sop)
+    stash = parent.createNode('stash')
+    stash.setInput(0, input)
+    stash.parm('stashinput').pressButton()
+    input.destroy()
+    stash.moveToGoodPosition(move_inputs=False, move_unconnected=False)
+    stash.setDisplayFlag(True)
+    stash.setRenderFlag(True)
+
+    hou.ui.setStatusMessage('Done importing.')
 
 
 def houdini_import_windows(format: str='obj'):
     # TODO: Implement houdini_import_windows function.
     pass
+
+
+def is_appdata_valid() -> bool:
+    """Checks if path defined in $NVIL_APPDATA exists and is a directory."""
+    if NVIL_APPDATA is None \
+       or not NVIL_APPDATA.is_dir():
+        hou.ui.setStatusMessage(
+            'Invalid $NVIL_WINEPREFIX.',
+            severity=hou.severityType.Error
+        )
+        return False
+    else:
+        return True
 
 
 def write_instructions(instructions: list[str]):
