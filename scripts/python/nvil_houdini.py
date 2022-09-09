@@ -30,6 +30,12 @@ FILE_PREFIX_HOU = 'hou'
 FILE_PREFIX_NVIL = 'nvil'
 MSG_FILENAME = 'NVil Message_In.txt'
 
+# Aliases to function and enums responsible for status messages.
+set_msg = hou.ui.setStatusMessage
+msg_important = hou.severityType.ImportantMessage
+msg_warning = hou.severityType.Warning
+msg_error = hou.severityType.Error
+
 
 def houdini_export_linux(format: str = 'obj'):
     """Merges and exports selected SOPs to Windows' temporary path."""
@@ -42,17 +48,13 @@ def houdini_export_linux(format: str = 'obj'):
     sops = hou.selectedNodes()
     # Check if anything is seleted.
     if len(sops) == 0:
-        hou.ui.setStatusMessage(
-            'Nothing to export.',
-            severity=hou.severityType.ImportantMessage)
+        set_msg('Nothing to export.', msg_important)
         return
 
     # Abort if one of the nodes is not a SOP.
     for sop in sops:
         if type(sop) is not hou.SopNode:
-            hou.ui.setStatusMessage(
-                f'Wrong candidate: {type(sop)}',
-                severity=hou.severityType.Error)
+            set_msg(f'Wrong candidate: {type(sop)}', msg_error)
             return
 
     # All selected nodes will be merged together.
@@ -97,7 +99,7 @@ def houdini_export_linux(format: str = 'obj'):
     write_instructions(instructions)
     write_message()
 
-    hou.ui.setStatusMessage('Done exporting. You can now switch to NVil.')
+    set_msg('Done exporting. You can now switch to NVil.')
 
 
 def houdini_export_windows(format: str='obj'):
@@ -110,24 +112,17 @@ def houdini_import_linux(format: str='obj'):
     # Check if there is anything to import.
     # For OBJ and FBX files, depending on chosen format.
     if not Path(TMP_PATH, f'FILE_PREFIX.{format}').exists():
-        hou.ui.setStatusMessage(
-            'Nothing to import.',
-            severity=hou.severityType.ImportantMessage
-        )
+        set_msg('Nothing to import.', msg_important)
 
     # Verify selection. Abort if first selected operator is not a SOP.
     sops = hou.selectedNodes()
     if len(sops) == 0:
-        hou.ui.setStatusMessage(
-            'Select at least one SOP.',
-            severity=hou.severityType.ImportantMessage
-        )
+        set_msg('Select at least one SOP.', msg_important)
+        return
+
     sop = sops[0]
     if not type(sop) == hou.SopNode:
-        hou.ui.setStatusMessage(
-            'Selected operator is not a SOP.',
-            severity=hou.severityType.ImportantMessage
-        )
+        set_msg('Selected operator is not a SOP.', msg_important)
         return
 
     # Import the file.
@@ -146,7 +141,7 @@ def houdini_import_linux(format: str='obj'):
     stash.setDisplayFlag(True)
     stash.setRenderFlag(True)
 
-    hou.ui.setStatusMessage('Done importing.')
+    set_msg('Done importing.')
 
 
 def houdini_import_windows(format: str='obj'):
@@ -158,10 +153,7 @@ def is_appdata_valid() -> bool:
     """Checks if path defined in $NVIL_APPDATA exists and is a directory."""
     if NVIL_APPDATA is None \
        or not NVIL_APPDATA.is_dir():
-        hou.ui.setStatusMessage(
-            'Invalid $NVIL_WINEPREFIX.',
-            severity=hou.severityType.Error
-        )
+        set_msg('Invalid $NVIL_WINEPREFIX.', msg_error)
         return False
     else:
         return True
@@ -188,19 +180,17 @@ def write_message():
         with message_path.open('w', encoding='utf-8') as target_file:
             target_file.write(message)
     except IOError:
-        hou.ui.setStatusMessage(
-            'Message file locked.' \
+        set_msg(
+            'Message file locked. ' \
             'Switch to NVil and check if the import dialog is closed.',
-            severity=hou.severityType.Error
+            msg_error
         )
 
 
 def is_path_a_dir(path: Path) -> bool:
     """Checks if path exists and is not a file."""
     if not path.exists() or not path.is_dir():
-        hou.ui.setStatusMessage(
-            f'Path {path} does not exist or is a file.',
-            severity=hou.severityType.Error)
+        set_msg(f'Path {path} does not exist or is a file.', msg_error)
         return False
     return True
 
@@ -212,10 +202,7 @@ def houdini_export(format: str='obj'):
     elif platform.system() == 'Windows':
         houdini_export_windows(format)
     else:
-        hou.ui.setStatusMessage(
-            'Unsupported operating system.',
-            severity=hou.severityType.Error
-        )
+        set_msg('Unsupported operating system.', msg_error)
 
 
 def houdini_import(format: str='obj'):
@@ -225,7 +212,4 @@ def houdini_import(format: str='obj'):
     elif platform.system() == 'Windows':
         houdini_export_windows(format)
     else:
-        hou.ui.setStatusMessage(
-            'Unsupported operating system.',
-            severity=hou.severityType.Error
-        )
+        set_msg('Unsupported operating system.', msg_error)
