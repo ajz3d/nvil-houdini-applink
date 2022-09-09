@@ -111,8 +111,9 @@ def houdini_import_linux(format: str='obj'):
     """Imports NVil clipboard into SOP network."""
     # Check if there is anything to import.
     # For OBJ and FBX files, depending on chosen format.
-    if not Path(TMP_PATH, f'FILE_PREFIX.{format}').exists():
+    if not Path(TMP_PATH, f'{FILE_PREFIX_NVIL}.{format}').exists():
         set_msg('Nothing to import.', msg_important)
+        return
 
     # Verify selection. Abort if first selected operator is not a SOP.
     sops = hou.selectedNodes()
