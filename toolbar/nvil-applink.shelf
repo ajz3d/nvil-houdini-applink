@@ -40,14 +40,14 @@ importlib.reload(nvil_houdini)
 nvil_houdini.houdini_import()]]></script>
   </tool>
 
-  <tool name="export_fbx_to_nvil" label="Yank FBX" icon="export_obj.svg">
+  <tool name="export_fbx_to_nvil" label="Yank FBX" icon="export_fbx.svg">
     <script scriptType="python"><![CDATA[import nvil_houdini
 import importlib
 importlib.reload(nvil_houdini)
 nvil_houdini.houdini_export(format='fbx')]]></script>
   </tool>
 
-  <tool name="import_fbx_from_nvil" label="Paste FBX" icon="import_obj.svg">
+  <tool name="import_fbx_from_nvil" label="Paste FBX" icon="import_fbx.svg">
     <script scriptType="python"><![CDATA[import nvil_houdini
 import importlib
 importlib.reload(nvil_houdini)
