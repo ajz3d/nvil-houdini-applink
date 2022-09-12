@@ -134,10 +134,24 @@ def houdini_import_linux(format: str='obj'):
     })
 
     input.setInput(0, sop)
+
     stash = parent.createNode('stash')
-    stash.setInput(0, input)
+    attrib_delete : hou.SopNode = None
+    # Remove fbx attributes.
+    if format == 'fbx':
+        attrib_delete = parent.createNode('attribdelete')
+        attrib_delete.setParms({
+            'ptdel': 'fbx*'
+        })
+        attrib_delete.setInput(0, input)
+        stash.setInput(0, attrib_delete)
+    else:
+        stash.setInput(0, input)
+
     stash.parm('stashinput').pressButton()
     input.destroy()
+    if format == 'fbx':
+        attrib_delete.destroy()
     stash.moveToGoodPosition(move_inputs=False, move_unconnected=False)
     stash.setDisplayFlag(True)
     stash.setRenderFlag(True)
