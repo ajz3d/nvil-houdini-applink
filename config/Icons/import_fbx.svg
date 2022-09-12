@@ -48,7 +48,7 @@
   <g
      id="layer1"
      transform="translate(-1,-1)"
-     style="display:inline">
+     style="display:none">
     <text
        xml:space="preserve"
        style="font-size:16px;line-height:1.25;font-family:Lato;-inkscape-font-specification:Lato;letter-spacing:0px;word-spacing:0px;display:none;fill:#bf8686;fill-opacity:1;stroke-width:1"
@@ -60,11 +60,11 @@
          y="0"
          style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-size:16px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans Heavy';fill:#bf8686;fill-opacity:1;stroke-width:1">OBJ</tspan></text>
     <path
-       style="display:inline;fill:#bf8686;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:none;fill:#bf8686;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 26,57 H 14 V 26 H 5 L 20,1 35,26 h -9 z"
        id="path10153" />
     <path
-       style="display:none;fill:#bf8686;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:#bf8686;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 14,1 h 12 v 31 h 9 L 20,57 5,32 h 9 z"
        id="path4081" />
     <text
@@ -81,7 +81,7 @@
   <g
      id="g3730"
      transform="translate(-1,-1)"
-     style="display:none">
+     style="display:inline">
     <text
        xml:space="preserve"
        style="font-size:16px;line-height:1.25;font-family:Lato;-inkscape-font-specification:Lato;letter-spacing:0px;word-spacing:0px;display:none;fill:#86bfa3;fill-opacity:1;stroke-width:1"
@@ -93,11 +93,11 @@
          y="0"
          style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-size:16px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans Heavy';fill:#86bfa3;fill-opacity:1;stroke-width:1">FBX</tspan></text>
     <path
-       style="display:none;fill:#86bfa3;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:#86bfa3;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 26,57 H 14 V 26 H 5 L 20,1 35,26 h -9 z"
        id="path3726" />
     <path
-       style="display:inline;fill:#86bfa3;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:none;fill:#86bfa3;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 14,1 h 12 v 31 h 9 L 20,57 5,32 h 9 z"
        id="path3728" />
     <text
