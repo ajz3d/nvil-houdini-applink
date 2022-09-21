@@ -76,7 +76,7 @@
   <CompositeToolSettings>
     <ID>23fce84a-a6cd-41df-ad18-98d25f901c68</ID>
     <ToolGroupName>Common Modeling Shortcut Tools</ToolGroupName>
-    <ToolName>P_LoadFromFile</ToolName>
-    <InputString>z:\tmp\houdini-nvil\hou.fbx; false; true; false; false</InputString>
+    <ToolName>P_LoadFromFbxFile</ToolName>
+    <InputString>z:\tmp\houdini-nvil\hou.fbx; false; 3; 1; true; true; true; true; false; ; false; 2</InputString>
   </CompositeToolSettings>
 </NewDataSet>

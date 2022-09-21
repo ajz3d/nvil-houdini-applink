@@ -76,7 +76,7 @@
   <CompositeToolSettings>
     <ID>923597b3-b7e9-4815-8715-23ced74a4071</ID>
     <ToolGroupName>Common Modeling Shortcut Tools</ToolGroupName>
-    <ToolName>P_SaveToFile</ToolName>
-    <InputString>z:\tmp\houdini-nvil\nvil.fbx;                                                          true;                       false</InputString>
+    <ToolName>P_SaveToFbxFile</ToolName>
+    <InputString>z:\tmp\houdini-nvil\nvil.fbx; 0; 1; false; false; true; 1; true; false; true; true; false; false; false; true; true; false; false; false</InputString>
   </CompositeToolSettings>
 </NewDataSet>
