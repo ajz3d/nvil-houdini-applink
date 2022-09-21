@@ -92,12 +92,15 @@ def houdini_export_linux(format: str = 'obj'):
     # By default root is z: in Wine, so we'll use that to our advantage.
     pure_win_path = PureWindowsPath('z:', TMP_PATH, f'{FILE_PREFIX_HOU}.{format}')
     # Tell NVil to import exported file.
-    instructions = [
-        f'TID Common Modeling Shortcut Tools >> ' \
-        f'P_LoadFromFile[{str(pure_win_path)}, false, true, false]'
-    ]
-    write_instructions(instructions)
-    write_message()
+    if format == 'obj':
+        instructions = [
+            f'TID Common Modeling Shortcut Tools >> ' \
+            f'P_LoadFromFile[{str(pure_win_path)}, false, true, false]'
+        ]
+        write_instructions(instructions)
+        write_message()
+    else:
+        load_from_fbx(pure_win_path)
 
     set_msg('Done exporting. You can now switch to NVil.')
 
@@ -181,6 +184,30 @@ def write_instructions(instructions: list[str]):
         for instruction in instructions:
             target_file.write(instruction)
         target_file.write('\n')
+
+
+def load_from_fbx(
+        path: PureWindowsPath,
+        new_scene: bool=False,
+        coordinates: int=3,
+        scale: float=1,
+        divide_into_obj: bool=True,
+        flip_tex_v: bool=True,
+        ignore_materials: bool=True,
+        map_fbx_hierarchy: bool=True,
+        replace_by_name: bool=False,
+        import_into: str='',
+        import_into_file_group: bool=False,
+        surface_type: int=2):
+    """Generates instructions for NVil to load a specified FBX file."""
+    instructions = [
+        f'TID Common Modeling Shortcut Tools >> ' \
+        f'P_LoadFromFbxFile[' \
+        f'{str(path)}, false, 3, 1, true, true, true, true, false, {import_into} , false, 2' \
+        f']'
+    ]
+    write_instructions(instructions)
+    write_message()
 
 
 def write_message():
