@@ -6,10 +6,11 @@ This program automates geometry exchange between NVil ([[http://digitalfossils.c
 If you're modeling an object in Houdini, but soon realize that some things would be faster to do in NVil, with this program you can send selected SOP to NVil with a single mouse-click.
 Similarly, you can send selected objects from NVil to Houdini SOP network.
 
+Supported file formats are FBX and OBJ.
+
 *** Exporting from Houdini to NVil
-With NVil open in the background select a SOP or multiple SOPs that you want to export and click on /Yank (OBJ)/ button on "NVil Clipboard" toolbar that is included with this program.
+With NVil open in the background select a SOP or multiple SOPs that you want to export and click on /Yank (OBJ)/ or /Yank (FBX) button on "NVil Clipboard" toolbar that is included with this program.
 Your geometry will be immediately exported to NVil via Houdini's.
-In NVil, depending on your settings in, you will be presented with an import settings dialog or already imported objects.
 
 *** Exporting from NVil to Houdini
 Simply select objects to export and select "File → Clipboard (obj)".
@@ -20,43 +21,43 @@ Press the "Paste (obj)" button located on the "NVil Clipboard" shelf.
 A stash node will be created and will be piped to selected SOP.
 
 ** Requirements
-- Houdini 19.5+ with Python3.
-  Might work on older Py3 Houdini versions as well.
-- The program has been tested on GNU/Linux with NVil running in [[https://www.winehq.org/][Wine]] ~WINEPREFIX~, installed with [[https://github.com/ajz3d/lutris-nvil-installation-scripts][this]] [[https://lutris.net/][Lutris]] installation script.
-  I have not tested this program with NVil installed in its native environment --- MS Windows, but it should work fine.
-  Let me know in the issues section if it doesn't.
-- In NVil, "3D Coat AppLink" must be enabled in "File → 3D-Coat AppLink → 3D-Coat AppLink Enabled".
-  However strange it may sound, 3D-Coat AppLink is required for NVil to process external instructions that this program leverages.
+- Houdini 19.5+ with Python3, though it might work on older Py3 Houdini versions as well.
+- GNU/Linux with NVil running in a [[https://www.winehq.org/][Wine]] ~WINEPREFIX~.
+  I recommend installing it with [[https://github.com/ajz3d/lutris-nvil-installation-scripts][this]] [[https://lutris.net/][Lutris]] installation script.
+
+*Note:* Because I don't have access to MS Windows, the support for that operating system had to be dropped for the time being.
 
 ** Installation
-Start by cloning the repo into your ~$HOUDINI_USER_PREF_DIR/packages~ directory:
-#+begin_src sh
+1. Start by cloning this repo into your ~$HOUDINI_USER_PREF_DIR/packages~ directory:
+   #+begin_src sh
 cd $HOUDINI_USER_PREF_DIR/packages
 git clone https://github.com/ajz3d/nvil-houdini-applink.git
-#+end_src
+   #+end_src
 
-If you didn't define ~$HOUDINI_USER_PREF_DIR~, then you will find Houdini preferences directory in ~$HOME/username/.houdinixx.x~.
+2. If you didn't define ~$HOUDINI_USER_PREF_DIR~, then you will find Houdini preferences directory in ~$HOME/username/.houdinixx.x~.
 
-You need to put ~$NVIL_APPDATA~ global variable in your ~houdini.env~ file (or define it system-wide):
-#+BEGIN_SRC bash
+3. Put ~$NVIL_APPDATA~ global variable in your ~houdini.env~ file (or define it system-wide):
+    #+BEGIN_SRC bash
 # houdini.env
 NVIL_APPDATA=/path/to/nvil/clipboard
-#+END_SRC
+    #+END_SRC
 
-~NVIL_APPDATA~ must contain the path to NVil application data.
+    ~$NVIL_APPDATA~ must contain the path to NVil application data directory.
 
-On Windows it's in ~%APPDATA%\Roaming\DigitalFossils\NVil~ path, which depending on MS Windows version is one of these locations:
-#+begin_src
+    On Windows it's in ~%APPDATA%\Roaming\DigitalFossils\NVil~ path, which depending on MS Windows version is one of these locations:
+    #+begin_src
 C:\Users\username\AppData\Roaming\DigitalFossils\NVil
 C:\Users\username\Application Data\Roaming\DigitalFossils\NVil
-#+end_src
+    #+end_src
 
-For NVil ~WINEPREFIX~ installed in ~/home/username/.opt/nvil-mono~, the variable should look like this:
-#+begin_src bash
+4. For NVil ~WINEPREFIX~ installed in ~/home/username/.opt/nvil-mono~, the variable should look like this:
+    #+begin_src bash
 # houdini.env
 NVIL_APPDATA="/home/username/.opt/nvil-mono/drive_c/users/AppData/Roaming/DigitalFossils/NVil
-#+end_src
+    #+end_src
 
-If Houdini is running in the background, restart it.
+5. Open NVil and import composite tools supplied with this program. You will find them in ~$HOUDINI_USER_PREF_DIR/packages/nvil-houdini-applink/composite/linux~.
 
-Add "NVil AppLink" shelf to your shelf set.
+6. If Houdini is running in the background, restart it.
+
+7. Add "NVil AppLink" shelf to your shelf set.
