@@ -123,19 +123,21 @@ def houdini_import_linux(format: str='obj'):
         set_msg('Selected operator is not a SOP.', msg_important)
         return
 
-    # Import the file.
+    # Create SOP network that handles the import.
+    # The network is slightly different for each file format.
     parent = sop.parent()
     input = parent.createNode('file')
     input.setParms({
         'file': str(Path(TMP_PATH, f'{FILE_PREFIX_NVIL}.{format}'))
     })
-
     input.setInput(0, sop)
-
     stash = parent.createNode('stash')
     attrib_delete : hou.SopNode = None
-    # Remove fbx attributes.
+    attrib_string_edit : hou.SopNode = None
+    attrib_rename : hou.SopNode = None
+
     if format == 'fbx':
+        # Remove unnecessary FBX attributes.
         attrib_delete = parent.createNode('attribdelete')
         attrib_delete.setParms({
             'ptdel': 'fbx*'
@@ -143,12 +145,34 @@ def houdini_import_linux(format: str='obj'):
         attrib_delete.setInput(0, input)
         stash.setInput(0, attrib_delete)
     else:
-        stash.setInput(0, input)
-
+        # Remove hierarchy separators from "path" attribute.
+        attrib_string_edit = parent.createNode('attribstringedit')
+        attrib_string_edit.setParms({
+            'primitiveattribs': 1,
+            'primattriblist': 'path',
+            'from0': '/*',
+            'to0': '*'
+        })
+        # Rename the "path" attribute to "name".
+        attrib_string_edit.setFirstInput(input)
+        attrib_rename = parent.createNode('attribute')
+        attrib_rename.setParms({
+            'frompr0': 'path',
+            'topr0': 'name'
+        })
+        attrib_rename.setFirstInput(attrib_string_edit)
+        stash.setInput(0, attrib_rename)
     stash.parm('stashinput').pressButton()
-    input.destroy()
+
+    # Remove all temporary operators.
     if format == 'fbx':
         attrib_delete.destroy()
+    else:
+        attrib_string_edit.destroy()
+        attrib_rename.destroy()
+    input.destroy()
+
+    # Tidy up the network.
     stash.moveToGoodPosition(move_inputs=False, move_unconnected=False)
     stash.setDisplayFlag(True)
     stash.setRenderFlag(True)
@@ -240,6 +264,7 @@ def load_from_fbx(
         f'{ignore_materials}, ' \
         f'{map_fbx_hierarchy}, ' \
         f'{replace_by_name}, ' \
+        f'{import_into}, ' \
         f'{import_into_file_group}, ' \
         f'{surface_type}, ' \
         f']'
