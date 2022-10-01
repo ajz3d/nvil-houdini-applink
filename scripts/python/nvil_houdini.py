@@ -83,7 +83,6 @@ def houdini_export_linux(format: str = 'obj'):
     })
     rop.setInput(0, groups_from_name)
     rop.parm('execute').pressButton()
-
     rop.destroy()
     groups_from_name.destroy()
     merge.destroy()
@@ -93,12 +92,7 @@ def houdini_export_linux(format: str = 'obj'):
     pure_win_path = PureWindowsPath('z:', TMP_PATH, f'{FILE_PREFIX_HOU}.{format}')
     # Tell NVil to import exported file.
     if format == 'obj':
-        instructions = [
-            f'TID Common Modeling Shortcut Tools >> ' \
-            f'P_LoadFromFile[{str(pure_win_path)}, false, true, false]'
-        ]
-        write_instructions(instructions)
-        write_message()
+        load_from_obj(pure_win_path)
     else:
         load_from_fbx(pure_win_path)
 
@@ -186,6 +180,40 @@ def write_instructions(instructions: list[str]):
         target_file.write('\n')
 
 
+def load_from_obj(
+        path: PureWindowsPath,
+        new_scene: bool=False,
+        coordinates: int=1,
+        scale: float=1.0,
+        divide_into_obj: bool=True,
+        divide_into_meshes: bool=True,
+        ignore_materials: bool=True,
+        replace_by_name: bool=False,
+        import_into: str='',
+        import_into_file_group: bool=False,
+        surface_type: int=2
+    ):
+    """Generates instructions for NVil to load a specified OBJ file."""
+    instructions = [
+        f'TID Common Modeling Shortcut Tools >> ' \
+        f'P_LoadFromObjFile[' \
+        f'{str(path)}, ' \
+        f'{new_scene}, ' \
+        f'{coordinates}, ' \
+        f'{scale}, ' \
+        f'{divide_into_obj}, ' \
+        f'{divide_into_meshes}, ' \
+        f'{ignore_materials}, ' \
+        f'{replace_by_name}, ' \
+        f'{import_into}, ' \
+        f'{import_into_file_group}, ' \
+        f'{surface_type}' \
+        f']'
+    ]
+    write_instructions(instructions)
+    write_message()
+
+
 def load_from_fbx(
         path: PureWindowsPath,
         new_scene: bool=False,
@@ -203,7 +231,17 @@ def load_from_fbx(
     instructions = [
         f'TID Common Modeling Shortcut Tools >> ' \
         f'P_LoadFromFbxFile[' \
-        f'{str(path)}, false, 3, 1, true, true, true, true, false, {import_into} , false, 2' \
+        f'{str(path)}, ' \
+        f'{new_scene}, ' \
+        f'{coordinates}, ' \
+        f'{scale}, ' \
+        f'{divide_into_obj}, ' \
+        f'{flip_tex_v}, ' \
+        f'{ignore_materials}, ' \
+        f'{map_fbx_hierarchy}, ' \
+        f'{replace_by_name}, ' \
+        f'{import_into_file_group}, ' \
+        f'{surface_type}, ' \
         f']'
     ]
     write_instructions(instructions)
